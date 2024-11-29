@@ -6,8 +6,9 @@ class SocketService {
     }
 
     connect(token) {
-        const SOCKET_URL = process.env.VUE_APP_SOCKET_URL || 'http://localhost:5000';
-        
+        const SOCKET_URL = import.meta.env.VITE_APP_SOCKET_URL;
+        console.log('Socket URL:', SOCKET_URL); // Debug log
+
         if (this.socket) {
             this.socket.disconnect();
         }
@@ -18,7 +19,7 @@ class SocketService {
         });
 
         this.socket.on('connect', () => {
-            console.log('Connected to socket server');
+            console.log('Socket connected successfully');
         });
 
         this.socket.on('connect_error', (error) => {
