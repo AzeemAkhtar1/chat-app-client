@@ -6,13 +6,11 @@ class SocketService {
     }
 
     connect(token) {
-        const SOCKET_URL = process.env.VUE_APP_SOCKET_URL || 'http://localhost:5000';
-        
         if (this.socket) {
             this.socket.disconnect();
         }
 
-        this.socket = io(SOCKET_URL, {
+        this.socket = io('https://chat-app-server-production-98cb.up.railway.app', {
             auth: { token },
             transports: ['websocket', 'polling']
         });
