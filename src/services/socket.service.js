@@ -6,12 +6,15 @@ class SocketService {
     }
 
     connect(token) {
+        const SOCKET_URL = process.env.VUE_APP_SOCKET_URL || 'http://localhost:5000';
+        
         if (this.socket) {
             this.socket.disconnect();
         }
 
-        this.socket = io('http://localhost:5000', {
-            auth: { token }
+        this.socket = io(SOCKET_URL, {
+            auth: { token },
+            transports: ['websocket', 'polling']
         });
 
         this.socket.on('connect', () => {

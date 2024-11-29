@@ -1,9 +1,11 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:5000/api';
+
 
 const api = axios.create({
-    baseURL: API_URL
+    baseURL: API_URL,
+    withCredentials: false // Set to true if using cookies
 });
 
 // Add token to requests
