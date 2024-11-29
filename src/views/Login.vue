@@ -40,31 +40,32 @@
   </template>
   
   <script>
-import { authService } from '../services/api.service';
-
-export default {
-  data() {
-    return {
-      credentials: {
+  import api from '../services/api'
+  
+  export default {
+    name: 'Login',
+    data() {
+      return {
         email: '',
         password: ''
-      },
-      error: null
-    };
-  },
-  methods: {
-    async handleLogin() {
-      try {
-        this.error = null;
-        console.log('Attempting login with:', this.credentials);
-        const response = await authService.login(this.credentials);
-        console.log('Login successful:', response);
-        this.$router.push('/chat');
-      } catch (error) {
-        console.error('Login failed:', error);
-        this.error = error.response?.data?.message || 'Login failed. Please try again.';
+      }
+    },
+    methods: {
+      async handleLogin() {
+        try {
+          const response = await api.post('/auth/login', {
+            email: this.email,
+            password: this.password
+          })
+          
+          localStorage.setItem('token', response.data.token)
+          localStorage.setItem('user', JSON.stringify(response.data))
+          
+          this.$router.push('/chat')
+        } catch (error) {
+          alert(error.response?.data?.message || 'Login failed')
+        }
       }
     }
   }
-};
-</script>
+  </script>

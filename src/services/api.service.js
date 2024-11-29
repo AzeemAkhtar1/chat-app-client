@@ -1,13 +1,11 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_APP_API_URL || 'http://localhost:5000/api';
-console.log('API URL:', API_URL); // Debug log
+const API_URL = process.env.VUE_APP_API_URL || 'http://localhost:5000/api';
+
 
 const api = axios.create({
     baseURL: API_URL,
-    headers: {
-        'Content-Type': 'application/json',
-    }
+    withCredentials: false // Set to true if using cookies
 });
 
 // Add token to requests
@@ -16,45 +14,29 @@ api.interceptors.request.use(config => {
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }
-    console.log('Request Config:', config); // Debug log
     return config;
 });
 
-// Add response interceptor
-api.interceptors.response.use(
-    response => {
-        console.log('API Response:', response); // Debug log
-        return response;
-    },
-    error => {
-        console.error('API Error:', error.response || error);
-        return Promise.reject(error);
-    }
-);
-
-export const authService = {
-    async register(userData) {
-        try {
-            const response = await api.post('/auth/register', userData);
-            return response.data;
-        } catch (error) {
-            console.error('Register Error:', error);
-            throw error;
-        }
+export const chatService = {
+    // Get all users
+    async getUsers() {
+        const response = await api.get('/chat/users');
+        return response.data;
     },
 
-    async login(credentials) {
-        try {
-            const response = await api.post('/auth/login', credentials);
-            if (response.data.token) {
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-            }
-            return response.data;
-        } catch (error) {
-            console.error('Login Error:', error);
-            throw error;
-        }
+    // Get conversation with specific user
+    async getConversation(userId) {
+        const response = await api.get(`/chat/messages/${userId}`);
+        return response.data;
+    },
+
+    // Send message
+    async sendMessage(content, receiverId) {
+        const response = await api.post('/chat/messages', {
+            content,
+            receiver: receiverId
+        });
+        return response.data;
     }
 };
 
